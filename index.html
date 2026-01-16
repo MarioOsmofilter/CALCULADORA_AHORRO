@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#2196F3">
+    <meta name="description" content="Calculadora de Ahorro - Presupuestos de Sistemas de Agua">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==">
+    <title>Calculadora de Ahorro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+ 
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #4CAF50;
+            --danger-color: #f44336;
+            --text-dark: #333;
+            --text-light: #666;
+            --bg-light: #f5f5f5;
+            --border-color: #ddd;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+        }
+ 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text-dark);
+        }
+ 
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+ 
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+ 
+        .logo-container {
+            margin-bottom: 20px;
+        }
+ 
+        .logo-container img {
+            max-width: 200px;
+            height: auto;
+            background: white;
+            padding: 10px;
+            border-radius: 10px;
+        }
+ 
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+ 
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+ 
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 20px;
+        }
+ 
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 40px;
+            position: relative;
+        }
+ 
+        .step-indicator::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--border-color);
+            z-index: 0;
+        }
+ 
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+            flex: 1;
+        }
+ 
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+ 
+        .step.active .step-number {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            transform: scale(1.1);
+        }
+ 
+        .step.completed .step-number {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+ 
+        .step-label {
+            font-size: 0.85em;
+            color: var(--text-light);
+            text-align: center;
+        }
+ 
+        .step.active .step-label {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+ 
+        .step-content {
+            animation: fadeIn 0.3s ease-in;
+        }
+ 
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+ 
+        .question {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: var(--text-dark);
+            font-weight: 600;
+        }
+ 
+        .options {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+ 
+        .option {
+            background: var(--bg-light);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+ 
+        .option:hover {
+            border-color: var(--primary-color);
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+ 
+        .option.selected {
+            border-color: var(--primary-color);
+            background: #e3f2fd;
+        }
+ 
+        .option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+        }
+ 
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 1.1em;
+        }
+ 
+        .input-group {
+            margin-bottom: 20px;
+        }
+ 
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+ 
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+ 
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+ 
+        .buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+ 
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+ 
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+ 
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+ 
+        .btn-primary:hover {
+            background: #1976D2;
+        }
+ 
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+ 
+        .btn-secondary:hover {
+            background: var(--border-color);
+        }
+ 
+        .btn-success {
+            background: var(--secondary-color);
+            color: white;
+        }
+ 
+        .btn-success:hover {
+            background: #45a049;
+        }
+ 
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+ 
+        .product-card {
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+ 
+        .product-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow);
+        }
+ 
+        .product-card.selected {
+            border-color: var(--primary-color);
+            background: #e3f2fd;
+        }
+ 
+        .product-name {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+ 
+        .product-image {
+            width: 100%;
+            max-width: 200px;
+            height: auto;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+ 
+        .price-options {
+            display: grid;
+            gap: 10px;
+            margin-top: 15px;
+        }
+ 
+        .price-option {
+            background: white;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+ 
+        .price-option:hover {
+            border-color: var(--primary-color);
+        }
+ 
+        .price-option.selected {
+            border-color: var(--primary-color);
+            background: #e3f2fd;
+        }
+ 
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+ 
+        .checkbox-option:hover {
+            border-color: var(--primary-color);
+        }
+ 
+        .checkbox-option.selected {
+            border-color: var(--primary-color);
+            background: #e3f2fd;
+        }
+ 
+        .checkbox-option input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+        }
+ 
+        .gift-badge {
+            background: var(--danger-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+ 
+        /* Results Screen */
+        .results-container {
+            padding: 20px;
+        }
+ 
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+ 
+        .result-box {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+ 
+        .result-box.eco {
+            background: linear-gradient(135deg, #4CAF50 0%, #8BC34A 100%);
+            color: white;
+        }
+ 
+        .result-box.product {
+            background: linear-gradient(135deg, #2196F3 0%, #64B5F6 100%);
+            color: white;
+        }
+ 
+        .result-box.savings {
+            background: linear-gradient(135deg, #FF9800 0%, #FFB74D 100%);
+            color: white;
+        }
+ 
+        .result-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+ 
+        .result-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+ 
+        .result-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+ 
+        .result-detail {
+            font-size: 0.95em;
+            opacity: 0.9;
+            margin: 5px 0;
+        }
+ 
+        .breakdown {
+            background: var(--bg-light);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+ 
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+ 
+        .breakdown-item:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            padding-top: 12px;
+            margin-top: 5px;
+            border-top: 2px solid var(--text-dark);
+        }
+ 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+ 
+        .modal.active {
+            display: flex;
+        }
+ 
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+ 
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+ 
+        .admin-link {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            color: var(--primary-color);
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: var(--shadow-lg);
+            font-weight: bold;
+            transition: all 0.3s;
+            z-index: 100;
+        }
+ 
+        .admin-link:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+ 
+        .hidden {
+            display: none !important;
+        }
+ 
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+ 
+            .card {
+                padding: 20px;
+            }
+ 
+            .header h1 {
+                font-size: 1.8em;
+            }
+ 
+            .header p {
+                font-size: 1em;
+            }
+ 
+            .question {
+                font-size: 1.2em;
+            }
+ 
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+ 
+            .step-label {
+                font-size: 0.7em;
+            }
+ 
+            .step-number {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9em;
+            }
+        }
+ 
+        @media (max-width: 480px) {
+            .buttons {
+                flex-direction: column;
+            }
+ 
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+ 
+        /* Loading spinner */
+        .spinner {
+            border: 3px solid var(--bg-light);
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+ 
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+ 
+        .long-press-hint {
+            font-size: 0.85em;
+            color: var(--text-light);
+            font-style: italic;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container" id="logoContainer"></div>
+            <h1>💧 Calculadora de Ahorro</h1>
+            <p>Descubre cuánto puedes ahorrar con nuestros sistemas de agua</p>
+        </div>
+ 
+        <div class="card" id="configuratorCard">
+            <!-- Step Indicator -->
+            <div class="step-indicator" id="stepIndicator"></div>
+ 
+            <!-- Step Content -->
+            <div class="step-content" id="stepContent"></div>
+ 
+            <!-- Navigation Buttons -->
+            <div class="buttons">
+                <button class="btn btn-secondary" id="btnBack" onclick="app.previousStep()">
+                    ← Atrás
+                </button>
+                <button class="btn btn-primary" id="btnNext" onclick="app.nextStep()">
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Save Modal -->
+    <div class="modal" id="saveModal">
+        <div class="modal-content">
+            <div class="modal-header">Guardar Presupuesto</div>
+            <div class="input-group">
+                <label>Nombre del cliente:</label>
+                <input type="text" id="clientName" placeholder="Ej: Juan Pérez">
+            </div>
+            <div class="input-group">
+                <label>Mantén pulsado para aplicar descuento:</label>
+                <button class="btn btn-secondary" id="discountBtn" style="width: 100%;">
+                    Mantener Pulsado
+                </button>
+            </div>
+            <div class="hidden" id="discountOptions">
+                <div class="input-group">
+                    <label>Tipo de descuento:</label>
+                    <select id="discountType">
+                        <option value="percentage">Porcentaje (%)</option>
+                        <option value="amount">Cantidad (€)</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Valor del descuento:</label>
+                    <input type="number" id="discountValue" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label>Validez de la oferta (días):</label>
+                    <input type="number" id="offerValidity" value="30" min="1">
+                </div>
+            </div>
+            <div class="buttons" style="margin-top: 20px;">
+                <button class="btn btn-secondary" onclick="app.closeSaveModal()">Cancelar</button>
+                <button class="btn btn-success" onclick="app.generatePDF()">Descargar PDF</button>
+            </div>
+        </div>
+    </div>
+ 
+    <a href="admin.html" class="admin-link">⚙️ Administración</a>
+ 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        // Database Manager
+        const DB = {
+            // LocalStorage helpers
+            get(key, defaultValue = null) {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : defaultValue;
+            },
+            set(key, value) {
+                localStorage.setItem(key, JSON.stringify(value));
+            },
+            // Initialize default data
+            init() {
+                if (!this.get('initialized')) {
+                    this.set('config', {
+                        logo: '',
+                        salesConditions: 'Condiciones de venta estándar.',
+                        warrantyConditions: 'Garantía estándar de 2 años.'
+                    });
+                    this.set('waterBrands', [
+                        { name: 'Agua Mineral', pricePerLiter: 0.30 }
+                    ]);
+                    this.set('aquaservicePrices', {
+                        2: 19.90,
+                        3: 29.90,
+                        4: 39.90,
+                        5: 49.90,
+                        6: 59.90,
+                        7: 69.90,
+                        8: 79.90
+                    });
+                    this.set('products', []);
+                    this.set('quotes', []);
+                    this.set('initialized', true);
+                }
+            }
+        };
+ 
+        // App State
+        const app = {
+            currentStep: 1,
+            totalSteps: 6,
+            data: {
+                clientType: null, // 'hogar' or 'empresa'
+                numberOfPeople: null,
+                currentService: null, // 'bottled', 'aquaservice', 'tap', 'osmosis'
+                currentServiceDetails: {},
+                selectedProduct: null,
+                selectedPayment: null,
+                selectedExtras: [],
+                selectedDouble: null,
+                installation: 0,
+                maintenanceIncluded: true
+            },
+ 
+            steps: [
+                { id: 1, label: 'Cliente' },
+                { id: 2, label: 'Personas' },
+                { id: 3, label: 'Servicio' },
+                { id: 4, label: 'Producto' },
+                { id: 5, label: 'Extras' },
+                { id: 6, label: 'Resultado' }
+            ],
+ 
+            init() {
+                DB.init();
+                this.loadLogo();
+                this.renderStep();
+            },
+ 
+            loadLogo() {
+                const config = DB.get('config');
+                const logoContainer = document.getElementById('logoContainer');
+                if (config && config.logo) {
+                    logoContainer.innerHTML = `<img src="${config.logo}" alt="Logo">`;
+                }
+            },
+ 
+            renderStepIndicator() {
+                const indicator = document.getElementById('stepIndicator');
+                indicator.innerHTML = this.steps.map(step => `
+                    <div class="step ${step.id === this.currentStep ? 'active' : ''} ${step.id < this.currentStep ? 'completed' : ''}">
+                        <div class="step-number">${step.id}</div>
+                        <div class="step-label">${step.label}</div>
+                    </div>
+                `).join('');
+            },
+ 
+            renderStep() {
+                this.renderStepIndicator();
+                const content = document.getElementById('stepContent');
+                const btnBack = document.getElementById('btnBack');
+                const btnNext = document.getElementById('btnNext');
+ 
+                btnBack.style.display = this.currentStep === 1 ? 'none' : 'flex';
+                btnNext.textContent = this.currentStep === this.totalSteps ? 'Ver Resultado' : 'Siguiente →';
+ 
+                switch(this.currentStep) {
+                    case 1:
+                        content.innerHTML = this.renderStep1();
+                        break;
+                    case 2:
+                        content.innerHTML = this.renderStep2();
+                        break;
+                    case 3:
+                        content.innerHTML = this.renderStep3();
+                        break;
+                    case 4:
+                        content.innerHTML = this.renderStep4();
+                        break;
+                    case 5:
+                        content.innerHTML = this.renderStep5();
+                        break;
+                    case 6:
+                        content.innerHTML = this.renderStep6();
+                        btnNext.style.display = 'none';
+                        break;
+                }
+            },
+ 
+            renderStep1() {
+                return `
+                    <div class="question">¿Es para empresa o hogar?</div>
+                    <div class="options">
+                        <div class="option ${this.data.clientType === 'hogar' ? 'selected' : ''}" onclick="app.selectClientType('hogar')">
+                            <input type="radio" name="clientType" ${this.data.clientType === 'hogar' ? 'checked' : ''}>
+                            <label>🏠 Hogar</label>
+                        </div>
+                        <div class="option ${this.data.clientType === 'empresa' ? 'selected' : ''}" onclick="app.selectClientType('empresa')">
+                            <input type="radio" name="clientType" ${this.data.clientType === 'empresa' ? 'checked' : ''}>
+                            <label>🏢 Empresa</label>
+                        </div>
+                    </div>
+                `;
+            },
+ 
+            renderStep2() {
+                const isCompany = this.data.clientType === 'empresa';
+                const options = isCompany
+                    ? [
+                        { value: '1-5', label: '1-5 personas' },
+                        { value: '5-15', label: '5-15 personas' },
+                        { value: '+15', label: 'Más de 15 personas' }
+                    ]
+                    : [
+                        { value: '1', label: '1 persona' },
+                        { value: '2', label: '2 personas' },
+                        { value: '3', label: '3 personas' },
+                        { value: '4', label: '4 personas' },
+                        { value: '5', label: '5 personas' },
+                        { value: '+6', label: 'Más de 6 personas' }
+                    ];
+ 
+                return `
+                    <div class="question">¿Cuántas personas sois?</div>
+                    <div class="options">
+                        ${options.map(opt => `
+                            <div class="option ${this.data.numberOfPeople === opt.value ? 'selected' : ''}"
+                                 onclick="app.selectNumberOfPeople('${opt.value}')">
+                                <input type="radio" name="people" ${this.data.numberOfPeople === opt.value ? 'checked' : ''}>
+                                <label>${opt.label}</label>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+ 
+            renderStep3() {
+                let additionalContent = '';
+ 
+                if (this.data.currentService === 'aquaservice') {
+                    const prices = DB.get('aquaservicePrices');
+                    additionalContent = `
+                        <div class="question" style="margin-top: 30px;">¿Cuántas botellas de 20L recibes?</div>
+                        <div class="options">
+                            ${Object.keys(prices).map(num => `
+                                <div class="option ${this.data.currentServiceDetails.bottles == num ? 'selected' : ''}"
+                                     onclick="app.selectAquaserviceBottles(${num})">
+                                    <input type="radio" name="bottles" ${this.data.currentServiceDetails.bottles == num ? 'checked' : ''}>
+                                    <label>${num} botellas - ${prices[num]}€ cada 4 semanas</label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                } else if (this.data.currentService === 'bottled') {
+                    const brands = DB.get('waterBrands');
+                    additionalContent = `
+                        <div class="input-group" style="margin-top: 30px;">
+                            <label>¿Cuántas botellas de 1.5L consumes al mes?</label>
+                            <input type="number" id="bottlesPerMonth" value="${this.data.currentServiceDetails.bottlesPerMonth || ''}"
+                                   min="1" placeholder="Ej: 40" onchange="app.setBottlesPerMonth(this.value)">
+                        </div>
+                        <div class="input-group">
+                            <label>Marca de agua:</label>
+                            <select id="waterBrand" onchange="app.setWaterBrand(this.value)">
+                                <option value="">Selecciona una marca</option>
+                                ${brands.map((brand, idx) => `
+                                    <option value="${idx}" ${this.data.currentServiceDetails.brandIndex == idx ? 'selected' : ''}>
+                                        ${brand.name} - ${brand.pricePerLiter}€/L
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    `;
+                } else if (this.data.currentService === 'osmosis') {
+                    additionalContent = `
+                        <div class="question" style="margin-top: 30px;">¿Es mensual o en propiedad?</div>
+                        <div class="options">
+                            <div class="option ${this.data.currentServiceDetails.type === 'monthly' ? 'selected' : ''}"
+                                 onclick="app.selectOsmosisType('monthly')">
+                                <input type="radio" name="osmosisType" ${this.data.currentServiceDetails.type === 'monthly' ? 'checked' : ''}>
+                                <label>Mensual</label>
+                            </div>
+                            <div class="option ${this.data.currentServiceDetails.type === 'owned' ? 'selected' : ''}"
+                                 onclick="app.selectOsmosisType('owned')">
+                                <input type="radio" name="osmosisType" ${this.data.currentServiceDetails.type === 'owned' ? 'checked' : ''}>
+                                <label>En propiedad</label>
+                            </div>
+                        </div>
+                        ${this.data.currentServiceDetails.type === 'monthly' ? `
+                            <div class="input-group" style="margin-top: 20px;">
+                                <label>Coste mensual:</label>
+                                <input type="number" id="monthlyCost" value="${this.data.currentServiceDetails.monthlyCost || ''}"
+                                       min="0" step="0.01" placeholder="Ej: 25.00" onchange="app.setOsmosisMonthlyCost(this.value)">
+                            </div>
+                        ` : ''}
+                    `;
+                }
+ 
+                return `
+                    <div class="question">¿Qué servicio de agua tienes actualmente?</div>
+                    <div class="options">
+                        <div class="option ${this.data.currentService === 'bottled' ? 'selected' : ''}"
+                             onclick="app.selectCurrentService('bottled')">
+                            <input type="radio" name="service" ${this.data.currentService === 'bottled' ? 'checked' : ''}>
+                            <label>🧴 Agua embotellada</label>
+                        </div>
+                        <div class="option ${this.data.currentService === 'aquaservice' ? 'selected' : ''}"
+                             onclick="app.selectCurrentService('aquaservice')">
+                            <input type="radio" name="service" ${this.data.currentService === 'aquaservice' ? 'checked' : ''}>
+                            <label>💧 Aquaservice</label>
+                        </div>
+                        <div class="option ${this.data.currentService === 'tap' ? 'selected' : ''}"
+                             onclick="app.selectCurrentService('tap')">
+                            <input type="radio" name="service" ${this.data.currentService === 'tap' ? 'checked' : ''}>
+                            <label>🚰 Agua del grifo</label>
+                        </div>
+                        <div class="option ${this.data.currentService === 'osmosis' ? 'selected' : ''}"
+                             onclick="app.selectCurrentService('osmosis')">
+                            <input type="radio" name="service" ${this.data.currentService === 'osmosis' ? 'checked' : ''}>
+                            <label>💎 Osmosis</label>
+                        </div>
+                    </div>
+                    ${additionalContent}
+                `;
+            },
+ 
+            renderStep4() {
+                const products = DB.get('products') || [];
+                const filteredProducts = products.filter(p =>
+                    p.clientType === this.data.clientType &&
+                    !p.isExtra &&
+                    !p.isDouble &&
+                    (!p.peopleRange || this.matchesPeopleRange(p.peopleRange))
+                );
+ 
+                if (filteredProducts.length === 0) {
+                    return `
+                        <div class="question">No hay productos disponibles</div>
+                        <p>Por favor, configura productos en el panel de administración.</p>
+                    `;
+                }
+ 
+                return `
+                    <div class="question">¿Qué opción prefieres?</div>
+                    <div class="options">
+                        ${filteredProducts.map((product, idx) => `
+                            <div class="product-card ${this.data.selectedProduct?.id === product.id ? 'selected' : ''}"
+                                 onclick="app.selectProduct(${idx})">
+                                <div class="product-name">${product.name}</div>
+                                ${product.image ? `<img src="${product.image}" alt="${product.name}" class="product-image">` : ''}
+                                <div class="price-options" id="priceOptions${idx}">
+                                    ${this.data.selectedProduct?.id === product.id ? this.renderPriceOptions(product) : ''}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            },
+ 
+            renderPriceOptions(product) {
+                const prices = this.data.clientType === 'empresa' ? product.pricesEmpresa : product.pricesHogar;
+                const paymentOptions = [
+                    { key: 'unico', label: 'Pago único', months: 0 },
+                    { key: 'm12', label: '12 meses', months: 12 },
+                    { key: 'm24', label: '24 meses', months: 24 },
+                    { key: 'm36', label: '36 meses', months: 36 },
+                    { key: 'm48', label: '48 meses', months: 48 },
+                    { key: 'm60', label: '60 meses', months: 60 }
+                ];
+ 
+                return `
+                    <div style="margin-top: 15px;">
+                        <strong>Forma de pago:</strong>
+                        ${paymentOptions.map(opt => {
+                            if (!prices[opt.key] || prices[opt.key] === 0) return '';
+                            const price = prices[opt.key];
+                            const finalPrice = this.data.clientType === 'empresa' ? price * 1.21 : price;
+                            return `
+                                <div class="price-option ${this.data.selectedPayment === opt.key ? 'selected' : ''}"
+                                     onclick="app.selectPayment('${opt.key}')">
+                                    <input type="radio" name="payment">
+                                    ${opt.label}: ${opt.months === 0 ? finalPrice.toFixed(2) : finalPrice.toFixed(2) + '/mes'}€
+                                    ${this.data.clientType === 'empresa' ? ' (IVA incl.)' : ''}
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+            },
+ 
+            renderStep5() {
+                // Check if product is osmosis or dispensador
+                if (!this.data.selectedProduct) {
+                    return '<div class="question">Selecciona un producto primero</div>';
+                }
+ 
+                const isOsmosis = this.data.selectedProduct.type === 'osmosis';
+                const products = DB.get('products') || [];
+ 
+                let content = '';
+ 
+                if (isOsmosis) {
+                    // Show extras (max 2)
+                    const extras = products.filter(p => p.isExtra && p.clientType === this.data.clientType);
+ 
+                    content += `
+                        <div class="question">¿Quieres añadir extras? (Máximo 2)</div>
+                        <div class="options">
+                            ${extras.map((extra, idx) => {
+                                const selected = this.data.selectedExtras.find(e => e.id === extra.id);
+                                return `
+                                    <div class="checkbox-option ${selected ? 'selected' : ''}"
+                                         onclick="app.toggleExtra(${idx})">
+                                        <input type="checkbox" ${selected ? 'checked' : ''}>
+                                        <div style="flex: 1;">
+                                            <strong>${extra.name}</strong>
+                                            ${selected ? this.renderExtraPaymentOptions(extra, idx) : ''}
+                                            <div class="long-press-hint">Mantén pulsado para marcar como REGALO</div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    `;
+                } else {
+                    // Show double products option
+                    const doubles = products.filter(p => p.isDouble && p.clientType === this.data.clientType);
+ 
+                    content += `
+                        <div class="question">¿Quieres añadir otro dispensador?</div>
+                        <div class="options">
+                            <div class="option ${!this.data.selectedDouble ? 'selected' : ''}"
+                                 onclick="app.selectDouble(null)">
+                                <input type="radio" name="double" ${!this.data.selectedDouble ? 'checked' : ''}>
+                                <label>No</label>
+                            </div>
+                            ${doubles.map((dbl, idx) => `
+                                <div class="option ${this.data.selectedDouble?.id === dbl.id ? 'selected' : ''}"
+                                     onclick="app.selectDouble(${idx})">
+                                    <input type="radio" name="double" ${this.data.selectedDouble?.id === dbl.id ? 'checked' : ''}>
+                                    <label>${dbl.name}</label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }
+ 
+                // Installation and maintenance
+                content += `
+                    <div class="question" style="margin-top: 30px;">Instalación y Mantenimiento</div>
+                    <div class="input-group">
+                        <label>Coste de instalación (€):</label>
+                        <input type="number" id="installationCost" value="${this.data.installation}"
+                               min="0" step="0.01" onchange="app.setInstallation(this.value)">
+                    </div>
+                    <div class="input-group">
+                        <label>¿Mantenimientos incluidos?</label>
+                        <select id="maintenanceIncluded" onchange="app.setMaintenanceIncluded(this.value)">
+                            <option value="true" ${this.data.maintenanceIncluded ? 'selected' : ''}>Sí (incluidos)</option>
+                            <option value="false" ${!this.data.maintenanceIncluded ? 'selected' : ''}>No (se añade al presupuesto)</option>
+                        </select>
+                    </div>
+                `;
+ 
+                return content;
+            },
+ 
+            renderExtraPaymentOptions(extra, idx) {
+                const prices = this.data.clientType === 'empresa' ? extra.pricesEmpresa : extra.pricesHogar;
+                const selectedExtra = this.data.selectedExtras.find(e => e.id === extra.id);
+ 
+                if (!selectedExtra) return '';
+ 
+                const paymentOptions = [
+                    { key: 'unico', label: 'Único' },
+                    { key: 'm12', label: '12m' },
+                    { key: 'm24', label: '24m' },
+                    { key: 'm36', label: '36m' },
+                    { key: 'm48', label: '48m' },
+                    { key: 'm60', label: '60m' }
+                ];
+ 
+                return `
+                    <div style="margin-top: 10px; font-size: 0.9em;">
+                        ${paymentOptions.map(opt => {
+                            if (!prices[opt.key] || prices[opt.key] === 0) return '';
+                            const price = prices[opt.key];
+                            const finalPrice = this.data.clientType === 'empresa' ? price * 1.21 : price;
+                            return `
+                                <label style="margin-right: 15px; cursor: pointer;">
+                                    <input type="radio" name="extraPayment${idx}"
+                                           onchange="app.selectExtraPayment(${idx}, '${opt.key}')"
+                                           ${selectedExtra.payment === opt.key ? 'checked' : ''}>
+                                    ${opt.label}: ${finalPrice.toFixed(2)}€
+                                </label>
+                            `;
+                        }).join('')}
+                        ${selectedExtra.isGift ? '<span class="gift-badge">REGALO</span>' : ''}
+                    </div>
+                `;
+            },
+ 
+            renderStep6() {
+                const result = this.calculateResults();
+ 
+                return `
+                    <div class="results-container">
+                        <div class="results-grid">
+                            <!-- Ecological Savings -->
+                            <div class="result-box eco">
+                                <div class="result-icon">🌱</div>
+                                <div class="result-title">AHORRO ECOLÓGICO</div>
+                                <div class="result-value">${result.eco.bottles}</div>
+                                <div class="result-detail">botellas ahorradas/año</div>
+                                <div class="result-value" style="font-size: 1.5em; margin-top: 15px;">${result.eco.co2} kg</div>
+                                <div class="result-detail">CO₂ ahorrado</div>
+                                <div class="result-value" style="font-size: 1.5em; margin-top: 15px;">${result.eco.plastic} kg</div>
+                                <div class="result-detail">plástico ahorrado</div>
+                            </div>
+ 
+                            <!-- Product Info -->
+                            <div class="result-box product">
+                                <div class="result-icon">💧</div>
+                                <div class="result-title">TU PRODUCTO</div>
+                                ${this.data.selectedProduct.image ?
+                                    `<img src="${this.data.selectedProduct.image}" alt="${this.data.selectedProduct.name}"
+                                          style="max-width: 150px; border-radius: 10px; margin: 15px 0;">` : ''}
+                                <div style="font-size: 1.2em; font-weight: bold; margin: 10px 0;">
+                                    ${this.data.selectedProduct.name}
+                                </div>
+                                <div class="breakdown">
+                                    <div class="breakdown-item">
+                                        <span>Producto:</span>
+                                        <span>${result.breakdown.product.toFixed(2)}€/mes</span>
+                                    </div>
+                                    ${result.breakdown.extras.map(e => `
+                                        <div class="breakdown-item">
+                                            <span>${e.name}:</span>
+                                            <span>${e.price.toFixed(2)}€/mes</span>
+                                        </div>
+                                    `).join('')}
+                                    ${result.breakdown.double ? `
+                                        <div class="breakdown-item">
+                                            <span>${result.breakdown.double.name}:</span>
+                                            <span>${result.breakdown.double.price.toFixed(2)}€/mes</span>
+                                        </div>
+                                    ` : ''}
+                                    ${!this.data.maintenanceIncluded && this.data.selectedProduct.maintenance > 0 ? `
+                                        <div class="breakdown-item">
+                                            <span>Mantenimiento:</span>
+                                            <span>${(this.data.selectedProduct.maintenance / 12).toFixed(2)}€/mes</span>
+                                        </div>
+                                    ` : ''}
+                                    <div class="breakdown-item">
+                                        <span>TOTAL:</span>
+                                        <span>${result.totalMonthly.toFixed(2)}€/mes</span>
+                                    </div>
+                                </div>
+                            </div>
+ 
+                            <!-- Economic Savings -->
+                            <div class="result-box savings">
+                                <div class="result-icon">💰</div>
+                                <div class="result-title">AHORRO ECONÓMICO</div>
+                                <div class="result-detail">Servicio actual:</div>
+                                <div class="result-value">${result.currentCost.toFixed(2)}€/mes</div>
+                                <div class="result-detail" style="margin-top: 15px;">Con nosotros:</div>
+                                <div class="result-value">${result.totalMonthly.toFixed(2)}€/mes</div>
+                                <div class="result-detail" style="margin-top: 15px; font-size: 1.2em;">
+                                    💚 AHORRO: ${result.monthlySavings.toFixed(2)}€/mes
+                                </div>
+                                <div class="result-detail" style="margin-top: 20px; font-size: 1.5em; font-weight: bold;">
+                                    A ${result.yearsToSave} años: ${result.totalSavings.toFixed(2)}€
+                                </div>
+                            </div>
+                        </div>
+ 
+                        <div class="buttons">
+                            <button class="btn btn-secondary" onclick="app.currentStep = 1; app.renderStep();">
+                                🔄 Nueva Consulta
+                            </button>
+                            <button class="btn btn-success" onclick="app.openSaveModal()">
+                                💾 Guardar Presupuesto
+                            </button>
+                        </div>
+                    </div>
+                `;
+            },
+ 
+            // Helper Methods
+            matchesPeopleRange(range) {
+                if (!range || this.data.clientType !== 'empresa') return true;
+                const people = this.data.numberOfPeople;
+                return people === range;
+            },
+ 
+            selectClientType(type) {
+                this.data.clientType = type;
+                this.renderStep();
+            },
+ 
+            selectNumberOfPeople(num) {
+                this.data.numberOfPeople = num;
+                this.renderStep();
+            },
+ 
+            selectCurrentService(service) {
+                this.data.currentService = service;
+                this.data.currentServiceDetails = {};
+                this.renderStep();
+            },
+ 
+            selectAquaserviceBottles(num) {
+                this.data.currentServiceDetails.bottles = num;
+                this.renderStep();
+            },
+ 
+            setBottlesPerMonth(value) {
+                this.data.currentServiceDetails.bottlesPerMonth = parseFloat(value);
+            },
+ 
+            setWaterBrand(idx) {
+                this.data.currentServiceDetails.brandIndex = parseInt(idx);
+            },
+ 
+            selectOsmosisType(type) {
+                this.data.currentServiceDetails.type = type;
+                this.renderStep();
+            },
+ 
+            setOsmosisMonthlyCost(value) {
+                this.data.currentServiceDetails.monthlyCost = parseFloat(value);
+            },
+ 
+            selectProduct(idx) {
+                const products = DB.get('products') || [];
+                const filteredProducts = products.filter(p =>
+                    p.clientType === this.data.clientType &&
+                    !p.isExtra &&
+                    !p.isDouble &&
+                    (!p.peopleRange || this.matchesPeopleRange(p.peopleRange))
+                );
+                this.data.selectedProduct = filteredProducts[idx];
+                this.data.selectedPayment = null;
+                this.renderStep();
+            },
+ 
+            selectPayment(paymentType) {
+                this.data.selectedPayment = paymentType;
+                this.renderStep();
+            },
+ 
+            toggleExtra(idx) {
+                const products = DB.get('products') || [];
+                const extras = products.filter(p => p.isExtra && p.clientType === this.data.clientType);
+                const extra = extras[idx];
+ 
+                const existingIdx = this.data.selectedExtras.findIndex(e => e.id === extra.id);
+ 
+                if (existingIdx >= 0) {
+                    this.data.selectedExtras.splice(existingIdx, 1);
+                } else {
+                    if (this.data.selectedExtras.length < 2) {
+                        this.data.selectedExtras.push({
+                            id: extra.id,
+                            name: extra.name,
+                            payment: this.data.selectedPayment,
+                            isGift: false,
+                            product: extra
+                        });
+                    }
+                }
+                this.renderStep();
+            },
+ 
+            selectExtraPayment(idx, payment) {
+                if (this.data.selectedExtras[idx]) {
+                    this.data.selectedExtras[idx].payment = payment;
+                }
+            },
+ 
+            selectDouble(idx) {
+                if (idx === null) {
+                    this.data.selectedDouble = null;
+                } else {
+                    const products = DB.get('products') || [];
+                    const doubles = products.filter(p => p.isDouble && p.clientType === this.data.clientType);
+                    this.data.selectedDouble = doubles[idx];
+                }
+                this.renderStep();
+            },
+ 
+            setInstallation(value) {
+                this.data.installation = parseFloat(value) || 0;
+            },
+ 
+            setMaintenanceIncluded(value) {
+                this.data.maintenanceIncluded = value === 'true';
+            },
+ 
+            calculateResults() {
+                // Calculate current cost
+                let currentCost = 0;
+                if (this.data.currentService === 'aquaservice') {
+                    const prices = DB.get('aquaservicePrices');
+                    const bottles = this.data.currentServiceDetails.bottles;
+                    currentCost = (prices[bottles] * 13) / 12; // 13 deliveries per year / 12 months
+                } else if (this.data.currentService === 'bottled') {
+                    const brands = DB.get('waterBrands');
+                    const brand = brands[this.data.currentServiceDetails.brandIndex];
+                    const bottlesPerMonth = this.data.currentServiceDetails.bottlesPerMonth;
+                    currentCost = bottlesPerMonth * 1.5 * brand.pricePerLiter;
+                } else if (this.data.currentService === 'osmosis' && this.data.currentServiceDetails.type === 'monthly') {
+                    currentCost = this.data.currentServiceDetails.monthlyCost || 0;
+                }
+ 
+                // Calculate new cost
+                const productPrices = this.data.clientType === 'empresa'
+                    ? this.data.selectedProduct.pricesEmpresa
+                    : this.data.selectedProduct.pricesHogar;
+ 
+                let productPrice = productPrices[this.data.selectedPayment] || 0;
+                if (this.data.clientType === 'empresa') {
+                    productPrice *= 1.21; // Add IVA
+                }
+ 
+                let totalMonthly = productPrice;
+                const breakdown = {
+                    product: productPrice,
+                    extras: [],
+                    double: null
+                };
+ 
+                // Add extras
+                this.data.selectedExtras.forEach(extra => {
+                    if (!extra.isGift) {
+                        const extraPrices = this.data.clientType === 'empresa'
+                            ? extra.product.pricesEmpresa
+                            : extra.product.pricesHogar;
+                        let extraPrice = extraPrices[extra.payment] || 0;
+                        if (this.data.clientType === 'empresa') {
+                            extraPrice *= 1.21;
+                        }
+                        totalMonthly += extraPrice;
+                        breakdown.extras.push({ name: extra.name, price: extraPrice });
+                    } else {
+                        breakdown.extras.push({ name: extra.name, price: 0 });
+                    }
+                });
+ 
+                // Add double product
+                if (this.data.selectedDouble) {
+                    const doublePrices = this.data.clientType === 'empresa'
+                        ? this.data.selectedDouble.pricesEmpresa
+                        : this.data.selectedDouble.pricesHogar;
+                    let doublePrice = doublePrices[this.data.selectedPayment] || 0;
+                    if (this.data.clientType === 'empresa') {
+                        doublePrice *= 1.21;
+                    }
+                    totalMonthly += doublePrice;
+                    breakdown.double = { name: this.data.selectedDouble.name, price: doublePrice };
+                }
+ 
+                // Add maintenance if not included
+                if (!this.data.maintenanceIncluded && this.data.selectedProduct.maintenance) {
+                    totalMonthly += this.data.selectedProduct.maintenance / 12;
+                }
+ 
+                // Calculate savings
+                const monthlySavings = currentCost - totalMonthly;
+ 
+                // Calculate years to save (when savings become positive)
+                let yearsToSave = 1;
+                const installationCost = this.data.installation;
+ 
+                // Find the year when total savings > installation cost
+                for (let year = 1; year <= 10; year++) {
+                    const totalSavingsAtYear = (monthlySavings * 12 * year) - installationCost;
+                    if (totalSavingsAtYear > 0) {
+                        yearsToSave = year;
+                        break;
+                    }
+                }
+ 
+                const totalSavings = (monthlySavings * 12 * yearsToSave) - installationCost;
+ 
+                // Calculate ecological savings
+                let litersPerYear = 0;
+                if (this.data.currentService === 'aquaservice') {
+                    litersPerYear = this.data.currentServiceDetails.bottles * 20 * 13; // bottles * 20L * 13 deliveries/year
+                } else if (this.data.currentService === 'bottled') {
+                    litersPerYear = this.data.currentServiceDetails.bottlesPerMonth * 1.5 * 12;
+                }
+ 
+                const bottlesPerYear = Math.round(litersPerYear / 1.5); // 1.5L bottles
+                const co2Saved = (bottlesPerYear * 80 / 1000).toFixed(2); // ~80g CO2 per bottle
+                const plasticSaved = (bottlesPerYear * 30 / 1000).toFixed(2); // ~30g plastic per bottle
+ 
+                return {
+                    currentCost,
+                    totalMonthly,
+                    monthlySavings,
+                    totalSavings,
+                    yearsToSave,
+                    breakdown,
+                    eco: {
+                        bottles: bottlesPerYear,
+                        co2: co2Saved,
+                        plastic: plasticSaved
+                    }
+                };
+            },
+ 
+            nextStep() {
+                if (this.canProceed()) {
+                    if (this.currentStep < this.totalSteps) {
+                        this.currentStep++;
+                        this.renderStep();
+                        window.scrollTo(0, 0);
+                    }
+                }
+            },
+ 
+            previousStep() {
+                if (this.currentStep > 1) {
+                    this.currentStep--;
+                    this.renderStep();
+                    window.scrollTo(0, 0);
+                }
+            },
+ 
+            canProceed() {
+                switch(this.currentStep) {
+                    case 1:
+                        return this.data.clientType !== null;
+                    case 2:
+                        return this.data.numberOfPeople !== null;
+                    case 3:
+                        if (!this.data.currentService) return false;
+                        if (this.data.currentService === 'aquaservice') {
+                            return this.data.currentServiceDetails.bottles !== undefined;
+                        }
+                        if (this.data.currentService === 'bottled') {
+                            return this.data.currentServiceDetails.bottlesPerMonth &&
+                                   this.data.currentServiceDetails.brandIndex !== undefined;
+                        }
+                        if (this.data.currentService === 'osmosis') {
+                            if (this.data.currentServiceDetails.type === 'monthly') {
+                                return this.data.currentServiceDetails.monthlyCost !== undefined;
+                            }
+                            return this.data.currentServiceDetails.type !== undefined;
+                        }
+                        return true;
+                    case 4:
+                        return this.data.selectedProduct && this.data.selectedPayment;
+                    case 5:
+                        return true;
+                    default:
+                        return true;
+                }
+            },
+ 
+            openSaveModal() {
+                document.getElementById('saveModal').classList.add('active');
+                this.setupDiscountButton();
+            },
+ 
+            closeSaveModal() {
+                document.getElementById('saveModal').classList.remove('active');
+            },
+ 
+            setupDiscountButton() {
+                const btn = document.getElementById('discountBtn');
+                const options = document.getElementById('discountOptions');
+                let pressTimer;
+ 
+                btn.addEventListener('mousedown', () => {
+                    pressTimer = setTimeout(() => {
+                        options.classList.remove('hidden');
+                        btn.textContent = 'Descuento Activado ✓';
+                        btn.style.background = 'var(--secondary-color)';
+                        btn.style.color = 'white';
+                    }, 1000);
+                });
+ 
+                btn.addEventListener('mouseup', () => {
+                    clearTimeout(pressTimer);
+                });
+ 
+                btn.addEventListener('mouseleave', () => {
+                    clearTimeout(pressTimer);
+                });
+ 
+                // Touch events for mobile
+                btn.addEventListener('touchstart', () => {
+                    pressTimer = setTimeout(() => {
+                        options.classList.remove('hidden');
+                        btn.textContent = 'Descuento Activado ✓';
+                        btn.style.background = 'var(--secondary-color)';
+                        btn.style.color = 'white';
+                    }, 1000);
+                });
+ 
+                btn.addEventListener('touchend', () => {
+                    clearTimeout(pressTimer);
+                });
+            },
+ 
+            generatePDF() {
+                const clientName = document.getElementById('clientName').value;
+                if (!clientName) {
+                    alert('Por favor, introduce el nombre del cliente');
+                    return;
+                }
+ 
+                const discountOptions = document.getElementById('discountOptions');
+                let discount = 0;
+                let discountType = '';
+                let validity = 30;
+ 
+                if (!discountOptions.classList.contains('hidden')) {
+                    discountType = document.getElementById('discountType').value;
+                    const discountValue = parseFloat(document.getElementById('discountValue').value) || 0;
+                    validity = parseInt(document.getElementById('offerValidity').value) || 30;
+ 
+                    const result = this.calculateResults();
+                    if (discountType === 'percentage') {
+                        discount = result.totalMonthly * (discountValue / 100);
+                    } else {
+                        discount = discountValue;
+                    }
+                }
+ 
+                // Save quote to database
+                const quote = {
+                    id: Date.now(),
+                    clientName,
+                    date: new Date().toISOString(),
+                    data: this.data,
+                    discount,
+                    discountType,
+                    validity
+                };
+ 
+                const quotes = DB.get('quotes') || [];
+                quotes.push(quote);
+                DB.set('quotes', quotes);
+ 
+                // Generate PDF (this will be implemented with jsPDF)
+                this.createPDF(quote);
+ 
+                this.closeSaveModal();
+                alert('Presupuesto guardado correctamente');
+            },
+ 
+            createPDF(quote) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const config = DB.get('config');
+                const result = this.calculateResults();
+                const finalPrice = result.totalMonthly - quote.discount;
+ 
+                // Page 1 - Cover
+                doc.setFontSize(24);
+                doc.text('PRESUPUESTO', 105, 100, { align: 'center' });
+ 
+                doc.setFontSize(16);
+                doc.text(`Cliente: ${quote.clientName}`, 105, 120, { align: 'center' });
+                doc.text(`Fecha: ${new Date(quote.date).toLocaleDateString('es-ES')}`, 105, 130, { align: 'center' });
+ 
+                const validityDate = new Date(quote.date);
+                validityDate.setDate(validityDate.getDate() + quote.validity);
+                doc.text(`Válido hasta: ${validityDate.toLocaleDateString('es-ES')}`, 105, 140, { align: 'center' });
+ 
+                // Page 2 - Details
+                doc.addPage();
+                doc.setFontSize(18);
+                doc.text('DETALLE DEL PRESUPUESTO', 20, 20);
+ 
+                let y = 40;
+                doc.setFontSize(12);
+                doc.text(`Producto: ${this.data.selectedProduct.name}`, 20, y);
+                y += 10;
+                doc.text(`Precio: ${result.breakdown.product.toFixed(2)}€/mes`, 20, y);
+                y += 15;
+ 
+                if (result.breakdown.extras.length > 0) {
+                    doc.text('Extras:', 20, y);
+                    y += 10;
+                    result.breakdown.extras.forEach(extra => {
+                        doc.text(`- ${extra.name}: ${extra.price.toFixed(2)}€/mes`, 25, y);
+                        y += 8;
+                    });
+                    y += 5;
+                }
+ 
+                if (result.breakdown.double) {
+                    doc.text(`Producto adicional: ${result.breakdown.double.name}`, 20, y);
+                    y += 8;
+                    doc.text(`${result.breakdown.double.price.toFixed(2)}€/mes`, 25, y);
+                    y += 15;
+                }
+ 
+                doc.text(`Instalación: ${this.data.installation}€`, 20, y);
+                y += 10;
+ 
+                if (!this.data.maintenanceIncluded) {
+                    doc.text(`Mantenimiento: ${this.data.selectedProduct.maintenance}€/año`, 20, y);
+                    y += 10;
+                }
+ 
+                y += 10;
+                doc.line(20, y, 190, y);
+                y += 10;
+ 
+                doc.setFontSize(14);
+                doc.text(`Subtotal: ${result.totalMonthly.toFixed(2)}€/mes`, 20, y);
+                y += 10;
+ 
+                if (quote.discount > 0) {
+                    doc.text(`Descuento: -${quote.discount.toFixed(2)}€/mes`, 20, y);
+                    y += 10;
+                }
+ 
+                doc.setFontSize(16);
+                doc.text(`TOTAL: ${finalPrice.toFixed(2)}€/mes`, 20, y);
+ 
+                y += 20;
+                doc.setFontSize(12);
+                doc.text(`Ahorro mensual: ${result.monthlySavings.toFixed(2)}€`, 20, y);
+                y += 10;
+                doc.text(`Ahorro a ${result.yearsToSave} años: ${result.totalSavings.toFixed(2)}€`, 20, y);
+ 
+                // Ecological savings
+                y += 20;
+                doc.setFontSize(14);
+                doc.text('AHORRO ECOLÓGICO ANUAL', 20, y);
+                y += 10;
+                doc.setFontSize(12);
+                doc.text(`${result.eco.bottles} botellas ahorradas`, 20, y);
+                y += 8;
+                doc.text(`${result.eco.co2} kg de CO₂ ahorrado`, 20, y);
+                y += 8;
+                doc.text(`${result.eco.plastic} kg de plástico ahorrado`, 20, y);
+ 
+                // Conditions
+                if (config.salesConditions) {
+                    doc.addPage();
+                    doc.setFontSize(14);
+                    doc.text('CONDICIONES DE VENTA', 20, 20);
+                    doc.setFontSize(10);
+                    const splitSales = doc.splitTextToSize(config.salesConditions, 170);
+                    doc.text(splitSales, 20, 35);
+                }
+ 
+                if (config.warrantyConditions) {
+                    doc.setFontSize(14);
+                    doc.text('CONDICIONES DE GARANTÍA', 20, 120);
+                    doc.setFontSize(10);
+                    const splitWarranty = doc.splitTextToSize(config.warrantyConditions, 170);
+                    doc.text(splitWarranty, 20, 135);
+                }
+ 
+                doc.save(`Presupuesto_${quote.clientName.replace(/\s/g, '_')}_${Date.now()}.pdf`);
+            }
+        };
+ 
+        // Initialize app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            app.init();
+        });
+    </script>
+</body>
+</html>
+ 

@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración - Calculadora de Ahorro</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+ 
+        :root {
+            --primary-color: #2196F3;
+            --secondary-color: #4CAF50;
+            --danger-color: #f44336;
+            --warning-color: #FF9800;
+            --text-dark: #333;
+            --text-light: #666;
+            --bg-light: #f5f5f5;
+            --border-color: #ddd;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-lg: 0 4px 16px rgba(0,0,0,0.15);
+        }
+ 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+        }
+ 
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+ 
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+ 
+        .header h1 {
+            font-size: 1.8em;
+        }
+ 
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+ 
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+ 
+        .btn-primary:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+ 
+        .btn-secondary {
+            background: white;
+            color: var(--primary-color);
+        }
+ 
+        .btn-secondary:hover {
+            background: var(--bg-light);
+        }
+ 
+        .btn-success {
+            background: var(--secondary-color);
+            color: white;
+        }
+ 
+        .btn-success:hover {
+            background: #45a049;
+        }
+ 
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
+        }
+ 
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+ 
+        .btn-warning {
+            background: var(--warning-color);
+            color: white;
+        }
+ 
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.9em;
+        }
+ 
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+ 
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+        }
+ 
+        .tab {
+            padding: 15px 25px;
+            background: white;
+            border: none;
+            border-radius: 6px 6px 0 0;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            color: var(--text-light);
+            transition: all 0.3s;
+        }
+ 
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom: 3px solid var(--primary-color);
+        }
+ 
+        .tab-content {
+            display: none;
+        }
+ 
+        .tab-content.active {
+            display: block;
+        }
+ 
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+ 
+        .card-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--text-dark);
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 10px;
+        }
+ 
+        .form-group {
+            margin-bottom: 20px;
+        }
+ 
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+ 
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+ 
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+ 
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+ 
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+ 
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+ 
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+        }
+ 
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+        }
+ 
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+ 
+        .table th,
+        .table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+ 
+        .table th {
+            background: var(--bg-light);
+            font-weight: 600;
+        }
+ 
+        .table tr:hover {
+            background: var(--bg-light);
+        }
+ 
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+ 
+        .alert {
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+ 
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+ 
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+ 
+        .hidden {
+            display: none !important;
+        }
+ 
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+ 
+        .modal.active {
+            display: flex;
+        }
+ 
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+ 
+        .modal-header {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+ 
+        .price-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+ 
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+ 
+            .tabs {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+ 
+            .form-row,
+            .price-grid {
+                grid-template-columns: 1fr;
+            }
+ 
+            .table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <h1>⚙️ Panel de Administración</h1>
+            <a href="index.html" class="btn btn-secondary">← Volver al Configurador</a>
+        </div>
+    </div>
+ 
+    <div class="container">
+        <div id="alertContainer"></div>
+ 
+        <div class="tabs">
+            <button class="tab active" onclick="admin.switchTab('config')">Configuración General</button>
+            <button class="tab" onclick="admin.switchTab('brands')">Marcas de Agua</button>
+            <button class="tab" onclick="admin.switchTab('products')">Productos</button>
+            <button class="tab" onclick="admin.switchTab('quotes')">Presupuestos</button>
+        </div>
+ 
+        <!-- Config Tab -->
+        <div id="tab-config" class="tab-content active">
+            <div class="card">
+                <div class="card-header">Configuración General</div>
+                <form id="configForm">
+                    <div class="form-group">
+                        <label>Logo de la empresa</label>
+                        <input type="file" id="logoFile" accept="image/*" onchange="admin.previewLogo(event)">
+                        <img id="logoPreview" class="image-preview hidden" alt="Logo preview">
+                    </div>
+ 
+                    <div class="form-group">
+                        <label>Condiciones de venta</label>
+                        <textarea id="salesConditions" placeholder="Escribe las condiciones de venta..."></textarea>
+                    </div>
+ 
+                    <div class="form-group">
+                        <label>Condiciones de garantía</label>
+                        <textarea id="warrantyConditions" placeholder="Escribe las condiciones de garantía..."></textarea>
+                    </div>
+ 
+                    <button type="submit" class="btn btn-success">Guardar Configuración</button>
+                </form>
+            </div>
+        </div>
+ 
+        <!-- Brands Tab -->
+        <div id="tab-brands" class="tab-content">
+            <div class="card">
+                <div class="card-header">Marcas de Agua Embotellada</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Nombre de la marca</label>
+                        <input type="text" id="brandName" placeholder="Ej: Agua Mineral">
+                    </div>
+                    <div class="form-group">
+                        <label>Precio por litro (€)</label>
+                        <input type="number" id="brandPrice" step="0.01" min="0" placeholder="Ej: 0.30">
+                    </div>
+                    <div style="display: flex; align-items: flex-end;">
+                        <button class="btn btn-success" onclick="admin.addWaterBrand()">Añadir Marca</button>
+                    </div>
+                </div>
+                <table class="table" id="brandsTable">
+                    <thead>
+                        <tr>
+                            <th>Marca</th>
+                            <th>Precio/L</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+ 
+            <div class="card">
+                <div class="card-header">Precios Aquaservice (cada 4 semanas)</div>
+                <div class="price-grid">
+                    <div class="form-group">
+                        <label>2 botellas</label>
+                        <input type="number" id="aqua2" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>3 botellas</label>
+                        <input type="number" id="aqua3" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>4 botellas</label>
+                        <input type="number" id="aqua4" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>5 botellas</label>
+                        <input type="number" id="aqua5" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>6 botellas</label>
+                        <input type="number" id="aqua6" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>7 botellas</label>
+                        <input type="number" id="aqua7" step="0.01" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>8 botellas</label>
+                        <input type="number" id="aqua8" step="0.01" min="0">
+                    </div>
+                </div>
+                <button class="btn btn-success" onclick="admin.saveAquaservicePrices()">Guardar Precios</button>
+            </div>
+        </div>
+ 
+        <!-- Products Tab -->
+        <div id="tab-products" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    Productos
+                    <button class="btn btn-primary" style="float: right;" onclick="admin.openProductModal()">
+                        + Nuevo Producto
+                    </button>
+                </div>
+                <table class="table" id="productsTable">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Cliente</th>
+                            <th>Categoría</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+ 
+        <!-- Quotes Tab -->
+        <div id="tab-quotes" class="tab-content">
+            <div class="card">
+                <div class="card-header">Presupuestos Guardados</div>
+                <table class="table" id="quotesTable">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Fecha</th>
+                            <th>Producto</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+ 
+    <!-- Product Modal -->
+    <div class="modal" id="productModal">
+        <div class="modal-content">
+            <div class="modal-header">Nuevo Producto</div>
+            <form id="productForm">
+                <div class="form-group">
+                    <label>Nombre del producto</label>
+                    <input type="text" id="productName" required>
+                </div>
+ 
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tipo</label>
+                        <select id="productType" required>
+                            <option value="osmosis">Osmosis</option>
+                            <option value="dispensador">Dispensador</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Para</label>
+                        <select id="productClient" required>
+                            <option value="hogar">Hogar</option>
+                            <option value="empresa">Empresa</option>
+                        </select>
+                    </div>
+                </div>
+ 
+                <div class="form-group" id="peopleRangeGroup" style="display: none;">
+                    <label>Tramo de personas (para dispensadores de empresa)</label>
+                    <select id="productPeopleRange">
+                        <option value="">Todos</option>
+                        <option value="1-5">1-5 personas</option>
+                        <option value="5-15">5-15 personas</option>
+                        <option value="+15">+15 personas</option>
+                    </select>
+                </div>
+ 
+                <div class="form-group">
+                    <label>Imagen del producto</label>
+                    <input type="file" id="productImage" accept="image/*" onchange="admin.previewProductImage(event)">
+                    <img id="productImagePreview" class="image-preview hidden" alt="Product preview">
+                </div>
+ 
+                <div class="form-group">
+                    <label>Mantenimiento anual (€)</label>
+                    <input type="number" id="productMaintenance" step="0.01" min="0" value="0">
+                </div>
+ 
+                <div class="card-header" style="margin-top: 20px;">Precios para Hogar</div>
+                <div class="price-grid">
+                    <div class="form-group">
+                        <label>Pago único</label>
+                        <input type="number" id="priceHogarUnico" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>12 meses</label>
+                        <input type="number" id="priceHogar12" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>24 meses</label>
+                        <input type="number" id="priceHogar24" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>36 meses</label>
+                        <input type="number" id="priceHogar36" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>48 meses</label>
+                        <input type="number" id="priceHogar48" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>60 meses</label>
+                        <input type="number" id="priceHogar60" step="0.01" min="0" value="0">
+                    </div>
+                </div>
+ 
+                <div class="card-header">Precios para Empresa (sin IVA)</div>
+                <div class="price-grid">
+                    <div class="form-group">
+                        <label>Pago único</label>
+                        <input type="number" id="priceEmpresaUnico" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>12 meses</label>
+                        <input type="number" id="priceEmpresa12" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>24 meses</label>
+                        <input type="number" id="priceEmpresa24" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>36 meses</label>
+                        <input type="number" id="priceEmpresa36" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>48 meses</label>
+                        <input type="number" id="priceEmpresa48" step="0.01" min="0" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>60 meses</label>
+                        <input type="number" id="priceEmpresa60" step="0.01" min="0" value="0">
+                    </div>
+                </div>
+ 
+                <div class="card-header">Categoría</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="productIsDouble">
+                    <label for="productIsDouble">Es producto doble (se ofrece como segundo producto)</label>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="productIsExtra">
+                    <label for="productIsExtra">Es extra (grifo 3 vías, enfriador, etc.)</label>
+                </div>
+ 
+                <div class="actions" style="margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="admin.closeProductModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Guardar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+ 
+    <script>
+        // Database Manager
+        const DB = {
+            get(key, defaultValue = null) {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : defaultValue;
+            },
+            set(key, value) {
+                localStorage.setItem(key, JSON.stringify(value));
+            }
+        };
+ 
+        // Admin Panel
+        const admin = {
+            currentTab: 'config',
+            editingProductId: null,
+ 
+            init() {
+                this.loadConfig();
+                this.loadBrands();
+                this.loadAquaservicePrices();
+                this.loadProducts();
+                this.loadQuotes();
+                this.setupEventListeners();
+            },
+ 
+            switchTab(tab) {
+                // Update tabs
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+ 
+                event.target.classList.add('active');
+                document.getElementById(`tab-${tab}`).classList.add('active');
+ 
+                this.currentTab = tab;
+            },
+ 
+            setupEventListeners() {
+                document.getElementById('configForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveConfig();
+                });
+ 
+                document.getElementById('productForm').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveProduct();
+                });
+ 
+                document.getElementById('productClient').addEventListener('change', () => {
+                    this.updatePeopleRangeVisibility();
+                });
+ 
+                document.getElementById('productType').addEventListener('change', () => {
+                    this.updatePeopleRangeVisibility();
+                });
+            },
+ 
+            updatePeopleRangeVisibility() {
+                const type = document.getElementById('productType').value;
+                const client = document.getElementById('productClient').value;
+                const group = document.getElementById('peopleRangeGroup');
+ 
+                if (type === 'dispensador' && client === 'empresa') {
+                    group.style.display = 'block';
+                } else {
+                    group.style.display = 'none';
+                }
+            },
+ 
+            showAlert(message, type = 'success') {
+                const container = document.getElementById('alertContainer');
+                container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+                setTimeout(() => {
+                    container.innerHTML = '';
+                }, 3000);
+            },
+ 
+            // Config Management
+            loadConfig() {
+                const config = DB.get('config') || {};
+                document.getElementById('salesConditions').value = config.salesConditions || '';
+                document.getElementById('warrantyConditions').value = config.warrantyConditions || '';
+ 
+                if (config.logo) {
+                    const preview = document.getElementById('logoPreview');
+                    preview.src = config.logo;
+                    preview.classList.remove('hidden');
+                }
+            },
+ 
+            previewLogo(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const preview = document.getElementById('logoPreview');
+                        preview.src = e.target.result;
+                        preview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
+ 
+            saveConfig() {
+                const config = DB.get('config') || {};
+                config.salesConditions = document.getElementById('salesConditions').value;
+                config.warrantyConditions = document.getElementById('warrantyConditions').value;
+ 
+                const logoPreview = document.getElementById('logoPreview');
+                if (!logoPreview.classList.contains('hidden')) {
+                    config.logo = logoPreview.src;
+                }
+ 
+                DB.set('config', config);
+                this.showAlert('Configuración guardada correctamente');
+            },
+ 
+            // Water Brands Management
+            loadBrands() {
+                const brands = DB.get('waterBrands') || [];
+                const tbody = document.querySelector('#brandsTable tbody');
+                tbody.innerHTML = brands.map((brand, idx) => `
+                    <tr>
+                        <td>${brand.name}</td>
+                        <td>${brand.pricePerLiter}€</td>
+                        <td>
+                            <button class="btn btn-danger btn-small" onclick="admin.deleteWaterBrand(${idx})">
+                                Eliminar
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+ 
+            addWaterBrand() {
+                const name = document.getElementById('brandName').value;
+                const price = parseFloat(document.getElementById('brandPrice').value);
+ 
+                if (!name || !price) {
+                    this.showAlert('Por favor, completa todos los campos', 'danger');
+                    return;
+                }
+ 
+                const brands = DB.get('waterBrands') || [];
+                brands.push({ name, pricePerLiter: price });
+                DB.set('waterBrands', brands);
+ 
+                document.getElementById('brandName').value = '';
+                document.getElementById('brandPrice').value = '';
+ 
+                this.loadBrands();
+                this.showAlert('Marca añadida correctamente');
+            },
+ 
+            deleteWaterBrand(idx) {
+                if (!confirm('¿Estás seguro de eliminar esta marca?')) return;
+ 
+                const brands = DB.get('waterBrands') || [];
+                brands.splice(idx, 1);
+                DB.set('waterBrands', brands);
+ 
+                this.loadBrands();
+                this.showAlert('Marca eliminada correctamente');
+            },
+ 
+            // Aquaservice Prices
+            loadAquaservicePrices() {
+                const prices = DB.get('aquaservicePrices') || {};
+                for (let i = 2; i <= 8; i++) {
+                    document.getElementById(`aqua${i}`).value = prices[i] || 0;
+                }
+            },
+ 
+            saveAquaservicePrices() {
+                const prices = {};
+                for (let i = 2; i <= 8; i++) {
+                    prices[i] = parseFloat(document.getElementById(`aqua${i}`).value) || 0;
+                }
+                DB.set('aquaservicePrices', prices);
+                this.showAlert('Precios de Aquaservice guardados correctamente');
+            },
+ 
+            // Products Management
+            loadProducts() {
+                const products = DB.get('products') || [];
+                const tbody = document.querySelector('#productsTable tbody');
+ 
+                if (products.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay productos</td></tr>';
+                    return;
+                }
+ 
+                tbody.innerHTML = products.map((product, idx) => `
+                    <tr>
+                        <td>${product.name}</td>
+                        <td>${product.type === 'osmosis' ? 'Osmosis' : 'Dispensador'}</td>
+                        <td>${product.clientType === 'hogar' ? 'Hogar' : 'Empresa'}</td>
+                        <td>
+                            ${product.isDouble ? '🔄 Doble' : ''}
+                            ${product.isExtra ? '✨ Extra' : ''}
+                            ${!product.isDouble && !product.isExtra ? '📦 Principal' : ''}
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="btn btn-primary btn-small" onclick="admin.editProduct(${idx})">
+                                    Editar
+                                </button>
+                                <button class="btn btn-danger btn-small" onclick="admin.deleteProduct(${idx})">
+                                    Eliminar
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            },
+ 
+            openProductModal() {
+                this.editingProductId = null;
+                document.getElementById('productForm').reset();
+                document.getElementById('productImagePreview').classList.add('hidden');
+                document.getElementById('productModal').classList.add('active');
+                this.updatePeopleRangeVisibility();
+            },
+ 
+            closeProductModal() {
+                document.getElementById('productModal').classList.remove('active');
+                this.editingProductId = null;
+            },
+ 
+            previewProductImage(event) {
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const preview = document.getElementById('productImagePreview');
+                        preview.src = e.target.result;
+                        preview.classList.remove('hidden');
+                    };
+                    reader.readAsDataURL(file);
+                }
+            },
+ 
+            saveProduct() {
+                const product = {
+                    id: this.editingProductId !== null ? this.editingProductId : Date.now(),
+                    name: document.getElementById('productName').value,
+                    type: document.getElementById('productType').value,
+                    clientType: document.getElementById('productClient').value,
+                    peopleRange: document.getElementById('productPeopleRange').value,
+                    maintenance: parseFloat(document.getElementById('productMaintenance').value) || 0,
+                    isDouble: document.getElementById('productIsDouble').checked,
+                    isExtra: document.getElementById('productIsExtra').checked,
+                    pricesHogar: {
+                        unico: parseFloat(document.getElementById('priceHogarUnico').value) || 0,
+                        m12: parseFloat(document.getElementById('priceHogar12').value) || 0,
+                        m24: parseFloat(document.getElementById('priceHogar24').value) || 0,
+                        m36: parseFloat(document.getElementById('priceHogar36').value) || 0,
+                        m48: parseFloat(document.getElementById('priceHogar48').value) || 0,
+                        m60: parseFloat(document.getElementById('priceHogar60').value) || 0
+                    },
+                    pricesEmpresa: {
+                        unico: parseFloat(document.getElementById('priceEmpresaUnico').value) || 0,
+                        m12: parseFloat(document.getElementById('priceEmpresa12').value) || 0,
+                        m24: parseFloat(document.getElementById('priceEmpresa24').value) || 0,
+                        m36: parseFloat(document.getElementById('priceEmpresa36').value) || 0,
+                        m48: parseFloat(document.getElementById('priceEmpresa48').value) || 0,
+                        m60: parseFloat(document.getElementById('priceEmpresa60').value) || 0
+                    }
+                };
+ 
+                const preview = document.getElementById('productImagePreview');
+                if (!preview.classList.contains('hidden')) {
+                    product.image = preview.src;
+                }
+ 
+                const products = DB.get('products') || [];
+ 
+                if (this.editingProductId !== null) {
+                    const idx = products.findIndex(p => p.id === this.editingProductId);
+                    if (idx >= 0) {
+                        products[idx] = product;
+                    }
+                } else {
+                    products.push(product);
+                }
+ 
+                DB.set('products', products);
+                this.loadProducts();
+                this.closeProductModal();
+                this.showAlert('Producto guardado correctamente');
+            },
+ 
+            editProduct(idx) {
+                const products = DB.get('products') || [];
+                const product = products[idx];
+ 
+                this.editingProductId = product.id;
+ 
+                document.getElementById('productName').value = product.name;
+                document.getElementById('productType').value = product.type;
+                document.getElementById('productClient').value = product.clientType;
+                document.getElementById('productPeopleRange').value = product.peopleRange || '';
+                document.getElementById('productMaintenance').value = product.maintenance || 0;
+                document.getElementById('productIsDouble').checked = product.isDouble || false;
+                document.getElementById('productIsExtra').checked = product.isExtra || false;
+ 
+                // Prices Hogar
+                document.getElementById('priceHogarUnico').value = product.pricesHogar.unico || 0;
+                document.getElementById('priceHogar12').value = product.pricesHogar.m12 || 0;
+                document.getElementById('priceHogar24').value = product.pricesHogar.m24 || 0;
+                document.getElementById('priceHogar36').value = product.pricesHogar.m36 || 0;
+                document.getElementById('priceHogar48').value = product.pricesHogar.m48 || 0;
+                document.getElementById('priceHogar60').value = product.pricesHogar.m60 || 0;
+ 
+                // Prices Empresa
+                document.getElementById('priceEmpresaUnico').value = product.pricesEmpresa.unico || 0;
+                document.getElementById('priceEmpresa12').value = product.pricesEmpresa.m12 || 0;
+                document.getElementById('priceEmpresa24').value = product.pricesEmpresa.m24 || 0;
+                document.getElementById('priceEmpresa36').value = product.pricesEmpresa.m36 || 0;
+                document.getElementById('priceEmpresa48').value = product.pricesEmpresa.m48 || 0;
+                document.getElementById('priceEmpresa60').value = product.pricesEmpresa.m60 || 0;
+ 
+                // Image
+                if (product.image) {
+                    const preview = document.getElementById('productImagePreview');
+                    preview.src = product.image;
+                    preview.classList.remove('hidden');
+                }
+ 
+                this.updatePeopleRangeVisibility();
+                document.getElementById('productModal').classList.add('active');
+            },
+ 
+            deleteProduct(idx) {
+                if (!confirm('¿Estás seguro de eliminar este producto?')) return;
+ 
+                const products = DB.get('products') || [];
+                products.splice(idx, 1);
+                DB.set('products', products);
+ 
+                this.loadProducts();
+                this.showAlert('Producto eliminado correctamente');
+            },
+ 
+            // Quotes Management
+            loadQuotes() {
+                const quotes = DB.get('quotes') || [];
+                const tbody = document.querySelector('#quotesTable tbody');
+ 
+                if (quotes.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay presupuestos</td></tr>';
+                    return;
+                }
+ 
+                tbody.innerHTML = quotes.map((quote, idx) => {
+                    const date = new Date(quote.date).toLocaleDateString('es-ES');
+                    const productName = quote.data.selectedProduct ? quote.data.selectedProduct.name : 'N/A';
+ 
+                    // Calculate total (simplified)
+                    let total = 0;
+                    if (quote.data.selectedProduct) {
+                        const prices = quote.data.clientType === 'empresa'
+                            ? quote.data.selectedProduct.pricesEmpresa
+                            : quote.data.selectedProduct.pricesHogar;
+                        total = prices[quote.data.selectedPayment] || 0;
+                        if (quote.data.clientType === 'empresa') {
+                            total *= 1.21;
+                        }
+                        total -= quote.discount || 0;
+                    }
+ 
+                    return `
+                        <tr>
+                            <td>${quote.clientName}</td>
+                            <td>${date}</td>
+                            <td>${productName}</td>
+                            <td>${total.toFixed(2)}€/mes</td>
+                            <td>
+                                <button class="btn btn-danger btn-small" onclick="admin.deleteQuote(${idx})">
+                                    Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            },
+ 
+            deleteQuote(idx) {
+                if (!confirm('¿Estás seguro de eliminar este presupuesto?')) return;
+ 
+                const quotes = DB.get('quotes') || [];
+                quotes.splice(idx, 1);
+                DB.set('quotes', quotes);
+ 
+                this.loadQuotes();
+                this.showAlert('Presupuesto eliminado correctamente');
+            }
+        };
+ 
+        // Initialize admin panel
+        document.addEventListener('DOMContentLoaded', () => {
+            admin.init();
+        });
+    </script>
+</body>
+</html>
